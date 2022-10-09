@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CountryHolidays.Models.Dtos;
 using CountryHolidays.Models.Entities;
 using CountryHolidays.Models.Responses;
 
@@ -13,7 +14,7 @@ namespace CountryHolidays.Helpers
                     src => src.CountryCode
                     ));
 
-            CreateMap<Country, CountryDto>
+            CreateMap<Country, CountryListDto>();
         }
     }
 }

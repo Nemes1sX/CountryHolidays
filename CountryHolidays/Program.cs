@@ -20,7 +20,8 @@ builder.Services.AddDbContext<HolidayContext>(options =>
     var services = builder.Services;
     var env = builder.Environment;
 
-    services.AddScoped<ICountryHolidayService, CountryHolidayService>();
+    services.AddTransient<ICountryService, CountryService>();
+    services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }
 
 var app = builder.Build();

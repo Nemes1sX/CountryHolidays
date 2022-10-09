@@ -4,6 +4,7 @@ using CountryHolidays.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CountryHolidays.Migrations
 {
     [DbContext(typeof(HolidayContext))]
-    partial class HolidayContextModelSnapshot : ModelSnapshot
+    [Migration("20221009191955_HolidayUpdate")]
+    partial class HolidayUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +56,7 @@ namespace CountryHolidays.Migrations
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("HolidayDate")
+                    b.Property<DateTime>("MonthDay")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")

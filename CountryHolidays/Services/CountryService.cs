@@ -3,32 +3,35 @@ using CountryHolidays.Data;
 using CountryHolidays.Models.Dtos;
 using CountryHolidays.Models.Entities;
 using CountryHolidays.Models.Responses;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace CountryHolidays.Services
 {
-    public class CountryHolidayService : ICountryHolidayService
+    public class CountryService : ICountryService
     {
         private readonly HolidayContext _db;
         private readonly IMapper _mapper;
 
-        public CountryHolidayService(HolidayContext db, IMapper mapper)
+        public CountryService(HolidayContext db, IMapper mapper)
         {
             _db = db;
             _mapper = mapper;
         }
 
-        public Task<List<CountryDto>> GetCountries()
+        public async Task<List<CountryListDto>> GetCountries()
+        {
+            var countries = await _db.Countries.ToListAsync();
+
+            return _mapper.Map<List<CountryListDto>>(countries);
+        }
+
+        public Task<CountryListDto> GetCountry(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CountryDto> GetCountry(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<CountryResponse>> ImportCountries()
+        public async Task<List<CountryListDto>> ImportCountries()
         {
             var result = new List<CountryResponse>();
             using (var client = new HttpClient())
@@ -45,7 +48,14 @@ namespace CountryHolidays.Services
             await _db.AddRangeAsync(entries);
             await _db.SaveChangesAsync();
 
-            return result;
+            var resultDTO = _mapper.Map<List<CountryListDto>>(result);
+
+            return resultDTO;
+        }
+
+        public Task<List<HolidayDto>> ImportCountryHolidays(string countryCode, int year)
+        {
+            throw new NotImplementedException();
         }
     }
 }
