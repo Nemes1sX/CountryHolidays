@@ -1,4 +1,5 @@
-﻿using CountryHolidays.Data;
+﻿using AutoMapper;
+using CountryHolidays.Data;
 using CountryHolidays.Models.Dtos;
 using CountryHolidays.Models.Entities;
 using CountryHolidays.Models.Responses;
@@ -9,10 +10,12 @@ namespace CountryHolidays.Services
     public class CountryHolidayService : ICountryHolidayService
     {
         private readonly HolidayContext _db;
+        private readonly IMapper _mapper;
 
-        public CountryHolidayService(HolidayContext db)
+        public CountryHolidayService(HolidayContext db, IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
 
         public Task<List<CountryDto>> GetCountries()
@@ -37,11 +40,7 @@ namespace CountryHolidays.Services
                 result = JsonSerializer.Deserialize<List<CountryResponse>>(response);
             }
 
-            var entries = result.ConvertAll(x => new Country
-            {
-                Name = x.Name, 
-                CountryCode = x.Code
-            }).ToList();
+            var entries = _mapper.Map<Country>(result);
 
             await _db.AddRangeAsync(entries);
             await _db.SaveChangesAsync();

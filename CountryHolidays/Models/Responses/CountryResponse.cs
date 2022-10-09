@@ -7,6 +7,6 @@ namespace CountryHolidays.Models.Responses
         [JsonPropertyName("fullName")]
         public string Name { get; set; }
         [JsonPropertyName("countryCode")]
-        public string Code { get; set; }
+        public string CountryCode { get; set; }
     }
 }
