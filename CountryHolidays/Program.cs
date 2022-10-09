@@ -1,4 +1,5 @@
 using CountryHolidays.Data;
+using CountryHolidays.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,13 @@ builder.Services.AddDbContext<HolidayContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("HolidaysDatabase"));
 });
+
+{
+    var services = builder.Services;
+    var env = builder.Environment;
+
+    services.AddScoped<ICountryHolidayService, CountryHolidayService>();
+}
 
 var app = builder.Build();
 
