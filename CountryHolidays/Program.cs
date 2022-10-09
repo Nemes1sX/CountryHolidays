@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<HolidayContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HolidayDatabase"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("HolidaysDatabase"));
 });
 
 var app = builder.Build();
