@@ -1,5 +1,4 @@
-﻿using CountryHolidays.Models.Responses;
-using CountryHolidays.Services;
+﻿using CountryHolidays.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CountryHolidays.Controllers
@@ -28,6 +27,11 @@ namespace CountryHolidays.Controllers
         public async Task<IActionResult> Index()
         {
             var countries = await _countryHolidayService.GetCountries();
+
+            if (!countries.Any())
+            {
+                return NotFound(new {msg = "No countries are found. Please import first"});
+            }
 
             return Ok(new { result = countries });
         }

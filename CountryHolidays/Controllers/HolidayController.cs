@@ -29,6 +29,10 @@ namespace CountryHolidays.Controllers
         public async Task<IActionResult> ImportHolidaysPerYear(string countryCode, int year)
         {
             var holidayDtoList = await _holidayService.ImportCountryHolidays(countryCode, year);
+            if (holidayDtoList == null)
+            {
+                return NotFound(new {message = "Country are not found or the year is too early"});
+            }
 
             return Ok(new { data = holidayDtoList });
         }
@@ -44,6 +48,10 @@ namespace CountryHolidays.Controllers
         public async Task<IActionResult> GetCountryHolidaysPerYear(string countryCode, int  year)
         {
             var holidayDtoList = await _holidayService.GetCountryHolidaysPerYear(countryCode, year);
+            if (holidayDtoList == null)
+            {
+                return NotFound(new { message = "Country and their related holidays are not found" });
+            }
 
             return Ok(new { data = holidayDtoList } );
         }
@@ -59,6 +67,11 @@ namespace CountryHolidays.Controllers
         public async Task<IActionResult> GetDayStatus(string countryCode, string date)
         {
             var status = await _holidayService.GetDayStatus(countryCode, date);
+            if (status == null)
+            {
+                return NotFound(new { msg = "Country not found" });
+            }
+
             return Ok(new { day = status });
         }
 
@@ -74,6 +87,12 @@ namespace CountryHolidays.Controllers
         public async Task<IActionResult> MaxFreeDays(string countryCode, int year)
         {
             var freeDays = await _holidayService.MostFreeDays(countryCode, year);
+
+            if (freeDays == 0)
+            {
+                return NotFound(new {msg = "Country hasn't got imported that calendar year holidays"});
+            }
+
             return Ok(new { maxFreeDays = freeDays });
         }
 

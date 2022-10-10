@@ -117,6 +117,9 @@ namespace CountryHolidays.Services
             if (dayStatus != null)
             {
                 status += dayStatus + ", ";
+            } else
+            {
+                return null;
             }
             if (selectedDate.DayOfWeek == DayOfWeek.Saturday || selectedDate.DayOfWeek == DayOfWeek.Sunday)
             {
@@ -138,7 +141,7 @@ namespace CountryHolidays.Services
             var maxFreeDays = 0;
             if (!countryHolidays.Any())
             {
-                return maxFreeDays;
+                return 0;
             }
 
             foreach (var countryHoliday in countryHolidays)
