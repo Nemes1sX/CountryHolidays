@@ -4,6 +4,8 @@ namespace CountryHolidays.Services
 {
     public interface IHolidayService
     {
-        Task<List<HolidayDto>> ImportCountryHolidays(string countryCode, int year);
+        Task<List<HolidayListDto>> ImportCountryHolidays(string countryCode, int year);
+        Task<List<HolidayListDto>> GetCountryHolidaysPerYear(string countryCode, int year);
+        Task<string> GetDayStatus(string date);
     }
 }

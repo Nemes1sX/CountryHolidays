@@ -43,12 +43,12 @@ namespace CountryHolidays.Services
                 result = JsonSerializer.Deserialize<List<CountryResponse>>(response);
             }
 
-            var entries = _mapper.Map<Country>(result);
+            var entries = _mapper.Map<List<Country>>(result);
 
-            await _db.AddRangeAsync(entries);
+            await _db.Countries.AddRangeAsync(entries);
             await _db.SaveChangesAsync();
 
-            var resultDTO = _mapper.Map<List<CountryListDto>>(result);
+            var resultDTO = _mapper.Map<List<CountryListDto>>(entries);
 
             return resultDTO;
         }

@@ -21,6 +21,7 @@ builder.Services.AddDbContext<HolidayContext>(options =>
     var env = builder.Environment;
 
     services.AddTransient<ICountryService, CountryService>();
+    services.AddTransient<IHolidayService, HolidayService>();
     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 }
 
