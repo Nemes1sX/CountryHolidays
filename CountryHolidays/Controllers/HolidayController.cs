@@ -14,6 +14,12 @@ namespace CountryHolidays.Controllers
             _holidayService = holidayService;
         }
 
+        /// <summary>
+        /// Import Holidays for the country in the selected calendar year
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("import")]
         public async Task<IActionResult> ImportHolidaysPerYear(string countryCode, int year)
@@ -23,6 +29,12 @@ namespace CountryHolidays.Controllers
             return Ok(new { data = holidayDtoList });
         }
 
+        /// <summary>
+        /// Get country holidays per selected calendar year
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("get")]
         public async Task<IActionResult> GetCountryHolidaysPerYear(string countryCode, int  year)
@@ -32,6 +44,12 @@ namespace CountryHolidays.Controllers
             return Ok(new { data = holidayDtoList } );
         }
 
+        /// <summary>
+        /// Get selected calendar year status
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("daystatus")]
         public async Task<IActionResult> GetDayStatus(string countryCode, string date)
@@ -40,6 +58,13 @@ namespace CountryHolidays.Controllers
             return Ok(new { day = status });
         }
 
+
+        /// <summary>
+        /// Get max free days per selected year in the chosen country
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("freedays")]
         public async Task<IActionResult> MaxFreeDays(string countryCode, int year)

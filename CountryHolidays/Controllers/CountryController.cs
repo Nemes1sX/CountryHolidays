@@ -15,6 +15,10 @@ namespace CountryHolidays.Controllers
             _countryHolidayService = countryHolidayService;
         }
 
+        /// <summary>
+        /// Get all countries
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("index")]
         public async Task<IActionResult> Index()
@@ -24,6 +28,10 @@ namespace CountryHolidays.Controllers
             return Ok(new { result = countries });
         }
 
+        /// <summary>
+        /// Import all countries
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Route("import")]
         public async Task<IActionResult> ImportCountries()
