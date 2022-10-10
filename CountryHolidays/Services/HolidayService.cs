@@ -20,7 +20,6 @@ namespace CountryHolidays.Services
             _mapper = mapper;
         }
 
-        public async Task<string> 
 
         public async Task<List<HolidayListDto>> GetCountryHolidaysPerYear(string countryCode, int year)
         {
@@ -89,6 +88,61 @@ namespace CountryHolidays.Services
             holiday.HolidayDate = new DateTime(holidayResponse.DateResponse.Year, holidayResponse.DateResponse.Month, holidayResponse.DateResponse.Day);
 
             return holiday;
+        }
+
+        public async Task<string> GetDayStatus(string countryCode, string date)
+        {
+            DateTime selectedDate;
+            DateTime.TryParse(date, out selectedDate);
+            var status = string.Empty;
+
+            var dayStatus = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate == selectedDate).Select(x => x.Type).FirstOrDefaultAsync();
+            if (dayStatus != null)
+            {
+                status += dayStatus + ", ";
+            }
+            if (selectedDate.DayOfWeek == DayOfWeek.Saturday || selectedDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                status += "Free day";
+            }
+
+            return status;
+        }
+
+        public async Task<int> MostFreeDays(string countryCode, int year)
+        {
+            var countryHolidays = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year).ToListAsync();
+            var maxFreeDays = 0;
+            if (!countryHolidays.Any())
+            {
+                return maxFreeDays;
+            }
+
+            foreach (var countryHoliday in countryHolidays)
+            {
+               var currentMaxFreeDays = 0; 
+               if (countryHoliday.HolidayDate.DayOfWeek ==  DayOfWeek.Monday || countryHoliday.HolidayDate.DayOfWeek == DayOfWeek.Friday)
+                {
+                    currentMaxFreeDays = 3;
+                }
+               if ((countryHoliday.HolidayDate.DayOfWeek == DayOfWeek.Tuesday ||
+                    countryHoliday.HolidayDate.DayOfWeek == DayOfWeek.Friday) && 
+                    (countryHoliday.HolidayDate.Month == 12 &&
+                    countryHoliday.HolidayDate.Day == 26))
+                {
+                    currentMaxFreeDays = 4;
+                }
+               else
+                {
+                    currentMaxFreeDays = 2;
+                }
+               if (currentMaxFreeDays > maxFreeDays)
+                {
+                    maxFreeDays = currentMaxFreeDays;
+                }
+            }
+
+            return maxFreeDays;
         }
     }
 }
