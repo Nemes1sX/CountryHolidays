@@ -53,9 +53,6 @@ namespace CountryHolidays.Services
             return resultDTO;
         }
 
-        public Task<List<HolidayDto>> ImportCountryHolidays(string countryCode, int year)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

@@ -8,6 +8,5 @@ namespace CountryHolidays.Services
         Task<List<CountryListDto>> GetCountries();
         Task<CountryListDto> GetCountry(int id);
         Task<List<CountryListDto>> ImportCountries();
-        Task<List<HolidayDto>> ImportCountryHolidays(string countryCode, int year);
     }
 }

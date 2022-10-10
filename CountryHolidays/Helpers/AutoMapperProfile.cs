@@ -7,7 +7,7 @@ namespace CountryHolidays.Helpers
 {
     public class AutoMapperProfile : Profile
     {
-        public AutoMapperProfile()
+        public AutoMapperProfile(int countryId)
         {
             CreateMap<CountryResponse, Country>()
                 .ForMember(dest => dest.CountryCode, act => act.MapFrom(
@@ -15,6 +15,10 @@ namespace CountryHolidays.Helpers
                     ));
 
             CreateMap<Country, CountryListDto>();
+
+            CreateMap<HolidayResponse, Holiday>()
+                .ForMember(dest => dest.Type, act => act.MapFrom(src => src.HolidayType))
+                .ForMember(dest => dest.CountryId, act => act.MapFrom(src => src.HolidayType == OptionsBuilderConfigurationExtensions.);
         }
     }
 }
