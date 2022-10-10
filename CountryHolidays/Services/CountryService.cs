@@ -19,6 +19,10 @@ namespace CountryHolidays.Services
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<CountryListDto>> GetCountries()
         {
             var countries = await _db.Countries.ToListAsync();
@@ -26,11 +30,16 @@ namespace CountryHolidays.Services
             return _mapper.Map<List<CountryListDto>>(countries);
         }
 
+        ///
         public Task<CountryListDto> GetCountry(int id)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<CountryListDto>> ImportCountries()
         {
             var result = new List<CountryResponse>();

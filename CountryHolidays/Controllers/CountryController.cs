@@ -10,6 +10,10 @@ namespace CountryHolidays.Controllers
     {
         private readonly ICountryService _countryHolidayService;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="countryHolidayService"></param>
         public CountryController(ICountryService countryHolidayService)
         {
             _countryHolidayService = countryHolidayService;

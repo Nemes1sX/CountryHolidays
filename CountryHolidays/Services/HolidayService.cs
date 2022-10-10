@@ -20,7 +20,12 @@ namespace CountryHolidays.Services
             _mapper = mapper;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
         public async Task<List<HolidayListDto>> GetCountryHolidaysPerYear(string countryCode, int year)
         {
             var countryHolidays = await _db.Holidays
@@ -41,6 +46,12 @@ namespace CountryHolidays.Services
             return countryHolidaysDto;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
         public async Task<List<HolidayListDto>> ImportCountryHolidays(string countryCode, int year)
         {
             var country = await _db.Countries.FirstOrDefaultAsync(x => x.CountryCode == countryCode);
@@ -90,6 +101,12 @@ namespace CountryHolidays.Services
             return holiday;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
         public async Task<string> GetDayStatus(string countryCode, string date)
         {
             DateTime selectedDate;
@@ -109,6 +126,12 @@ namespace CountryHolidays.Services
             return status;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="countryCode"></param>
+        /// <param name="year"></param>
+        /// <returns></returns>
         public async Task<int> MostFreeDays(string countryCode, int year)
         {
             var countryHolidays = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year).ToListAsync();
