@@ -30,6 +30,7 @@ namespace CountryHolidays.Services
         {
             var countryHolidays = await _db.Holidays
                 .Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year)
+                .OrderBy(x => x.HolidayDate)
                 .Include(x => x.Country)
                .GroupBy(x => new { 
                     Month = x.HolidayDate.Month,
@@ -113,14 +114,18 @@ namespace CountryHolidays.Services
             DateTime.TryParse(date, out selectedDate);
             var status = string.Empty;
 
-            var dayStatus = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate == selectedDate).Select(x => x.Type).FirstOrDefaultAsync();
-            if (dayStatus != null)
-            {
-                status += dayStatus + ", ";
-            } else
+            var country = await _db.Countries.FirstOrDefaultAsync(x => x.CountryCode == countryCode);
+            if (country == null)
             {
                 return null;
             }
+
+            var dayStatus = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode).Select(x => x.Type).FirstOrDefaultAsync();
+            if (dayStatus != null)
+            {
+                status += dayStatus + ", ";
+            } 
+
             if (selectedDate.DayOfWeek == DayOfWeek.Saturday || selectedDate.DayOfWeek == DayOfWeek.Sunday)
             {
                 status += "Free day";
@@ -137,7 +142,7 @@ namespace CountryHolidays.Services
         /// <returns></returns>
         public async Task<int> MostFreeDays(string countryCode, int year)
         {
-            var countryHolidays = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year).ToListAsync();
+            var countryHolidays = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year).OrderBy(x => x.HolidayDate).ToListAsync();
             var maxFreeDays = 0;
             if (!countryHolidays.Any())
             {

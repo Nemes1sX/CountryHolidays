@@ -30,12 +30,6 @@ namespace CountryHolidays.Services
             return _mapper.Map<List<CountryListDto>>(countries);
         }
 
-        ///
-        public Task<CountryListDto> GetCountry(int id)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// 
         /// </summary>
