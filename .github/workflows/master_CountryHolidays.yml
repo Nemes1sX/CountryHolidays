@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'CountryHolidays'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1931F09AD9084432A592CF49E1A8373D }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_AD15D3E145414ABBB9A48ABD4A519FFB }}
           package: .
