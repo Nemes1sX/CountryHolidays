@@ -4,6 +4,7 @@ using CountryHolidays.Models.Dtos;
 using CountryHolidays.Models.Entities;
 using CountryHolidays.Models.Responses;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 
@@ -26,25 +27,41 @@ namespace CountryHolidays.Services
         /// <param name="countryCode"></param>
         /// <param name="year"></param>
         /// <returns></returns>
-        public async Task<List<HolidayListDto>> GetCountryHolidaysPerYear(string countryCode, int year)
+        public async Task<List<string>> GetCountryHolidaysPerYearGrouped(string countryCode, int year)
         {
-            var countryHolidays = await _db.Holidays
+            var countryHolidayMonthList = new List<string>();
+            var countryHolidaysCountYear = await _db.Holidays
                 .Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year)
-                .OrderBy(x => x.HolidayDate)
                 .Include(x => x.Country)
                .GroupBy(x => new { 
                     Month = x.HolidayDate.Month,
-                    Year = x.HolidayDate.Year,
+            }).Select(x => new 
+            {              
+                Count = x.Count(),
+                Month = x.FirstOrDefault().HolidayDate.Month
             }).ToListAsync();
 
-            if (!countryHolidays.Any())
+            if (!countryHolidaysCountYear.Any())
             {
                 return null;
             }
 
-            var countryHolidaysDto = _mapper.Map<List<HolidayListDto>>(countryHolidays);
+            foreach (var countryHoliday in countryHolidaysCountYear)
+            {
+                DateTimeFormatInfo mfi = new DateTimeFormatInfo();
+                var monthHolidayCount = string.Empty;
+                if (countryHoliday.Count > 1)
+                {
+                    monthHolidayCount = $"{mfi.GetMonthName(countryHoliday.Month)} has {countryHoliday.Count} holidays";
+                } else
+                {
+                    monthHolidayCount = $"{mfi.GetMonthName(countryHoliday.Month)} has {countryHoliday.Count} holiday";
+                }
+                countryHolidayMonthList.Add(monthHolidayCount);
+            }
 
-            return countryHolidaysDto;
+
+            return countryHolidayMonthList;
         }
 
         /// <summary>

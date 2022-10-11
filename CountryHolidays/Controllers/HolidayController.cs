@@ -47,7 +47,7 @@ namespace CountryHolidays.Controllers
         [Route("get")]
         public async Task<IActionResult> GetCountryHolidaysPerYear(string countryCode, int  year)
         {
-            var holidayDtoList = await _holidayService.GetCountryHolidaysPerYear(countryCode, year);
+            var holidayDtoList = await _holidayService.GetCountryHolidaysPerYearGrouped(countryCode, year);
             if (holidayDtoList == null)
             {
                 return NotFound(new { message = "Country and their related holidays are not found" });
