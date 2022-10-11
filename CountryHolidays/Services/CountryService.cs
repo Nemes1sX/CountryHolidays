@@ -10,13 +10,15 @@ namespace CountryHolidays.Services
 {
     public class CountryService : ICountryService
     {
+        private IConfiguration _configuration;
         private readonly HolidayContext _db;
         private readonly IMapper _mapper;
 
-        public CountryService(HolidayContext db, IMapper mapper)
+        public CountryService(HolidayContext db, IMapper mapper, IConfiguration configuration)
         {
             _db = db;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -36,10 +38,17 @@ namespace CountryHolidays.Services
         /// <returns></returns>
         public async Task<List<CountryListDto>> ImportCountries()
         {
+            var url = _configuration.GetValue<string>("UrlSettings:HolidayApiUrl");
+            var importCountriesUrl = url + "=getSupportedCountries";
+            var existedCountries = await _db.Countries.ToListAsync();
+            if (existedCountries.Any())
+            {
+                return _mapper.Map<List<CountryListDto>>(existedCountries);
+            }
             var result = new List<CountryResponse>();
             using (var client = new HttpClient())
             {
-                var responseMessage = await client.GetAsync("https://kayaposoft.com/enrico/json/v2.0/?action=getSupportedCountries");
+                var responseMessage = await client.GetAsync(importCountriesUrl);
 
                 var response = await responseMessage.Content.ReadAsStringAsync();
 

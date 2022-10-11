@@ -5,20 +5,21 @@ using CountryHolidays.Models.Entities;
 using CountryHolidays.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using System.Linq;
 using System.Text.Json;
 
 namespace CountryHolidays.Services
 {
     public class HolidayService : IHolidayService
     {
+        private readonly IConfiguration _configuration;
         private readonly HolidayContext _db;
         private readonly IMapper _mapper;
 
-        public HolidayService(HolidayContext db, IMapper mapper)
+        public HolidayService(HolidayContext db, IMapper mapper, IConfiguration configuration)
         {
             _db = db;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -32,14 +33,13 @@ namespace CountryHolidays.Services
             var countryHolidayMonthList = new List<string>();
             var countryHolidaysCountYear = await _db.Holidays
                 .Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year)
-                .Include(x => x.Country)
-               .GroupBy(x => new { 
+                .GroupBy(x => new { 
                     Month = x.HolidayDate.Month,
-            }).Select(x => new 
-            {              
-                Count = x.Count(),
-                Month = x.FirstOrDefault().HolidayDate.Month
-            }).ToListAsync();
+                }).Select(x => new 
+                {              
+                    Count = x.Count(),
+                    Month = x.FirstOrDefault().HolidayDate.Month
+                }).ToListAsync();
 
             if (!countryHolidaysCountYear.Any())
             {
@@ -60,7 +60,6 @@ namespace CountryHolidays.Services
                 countryHolidayMonthList.Add(monthHolidayCount);
             }
 
-
             return countryHolidayMonthList;
         }
 
@@ -72,10 +71,18 @@ namespace CountryHolidays.Services
         /// <returns></returns>
         public async Task<List<HolidayListDto>> ImportCountryHolidays(string countryCode, int year)
         {
+            var url = _configuration.GetValue<string>("UrlSettings:HolidayApiUrl");
+            var countryHolidaysUrl = url + $"=getHolidaysForYear&year={year}&country={countryCode}";
             var country = await _db.Countries.FirstOrDefaultAsync(x => x.CountryCode == countryCode);
             if (country == null)
             {
                 return null;
+            }
+            var countryHolidays = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year).ToListAsync();
+            if (countryHolidays.Any())
+            {
+                var existedHolidayDtoList = _mapper.Map<List<HolidayListDto>>(countryHolidays);
+                return existedHolidayDtoList;
             }
 
             var result = new List<HolidayResponse>();
@@ -83,7 +90,7 @@ namespace CountryHolidays.Services
 
             using (var client = new HttpClient())
             {
-                var responseMessage = await client.GetAsync($"https://kayaposoft.com/enrico/json/v2.0?action=getHolidaysForYear&year={year}&country={countryCode}");
+                var responseMessage = await client.GetAsync(countryHolidaysUrl);
 
                 var response = await responseMessage.Content.ReadAsStringAsync();
 
