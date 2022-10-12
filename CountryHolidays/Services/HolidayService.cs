@@ -175,22 +175,26 @@ namespace CountryHolidays.Services
 
             foreach (var countryHoliday in countryHolidays)
             {
-               var currentMaxFreeDays = 0; 
-               if (countryHoliday.HolidayDate.DayOfWeek ==  DayOfWeek.Monday || countryHoliday.HolidayDate.DayOfWeek == DayOfWeek.Friday)
+               var currentMaxFreeDays = 1; 
+                var daysCount = 1;
+                if (countryHoliday.HolidayDate.AddDays(-2).DayOfWeek == DayOfWeek.Saturday && countryHoliday.HolidayDate.AddDays(-1).DayOfWeek == DayOfWeek.Sunday)
                 {
-                    currentMaxFreeDays = 3;
-                }
-               if ((countryHoliday.HolidayDate.DayOfWeek == DayOfWeek.Tuesday ||
-                    countryHoliday.HolidayDate.DayOfWeek == DayOfWeek.Friday) && 
-                    (countryHoliday.HolidayDate.Month == 12 &&
-                    countryHoliday.HolidayDate.Day == 26))
+                    currentMaxFreeDays += 2;
+                } else if (countryHoliday.HolidayDate.AddDays(-1).DayOfWeek == DayOfWeek.Saturday)
                 {
-                    currentMaxFreeDays = 4;
+                    currentMaxFreeDays += 1;
                 }
-               else
-                {
-                    currentMaxFreeDays = 2;
+                while (true)
+                {              
+                    var holiday = await _db.Holidays.FirstOrDefaultAsync(x => x.HolidayDate == countryHoliday.HolidayDate.AddDays(daysCount));
+                    if (holiday == null && countryHoliday.HolidayDate.AddDays(daysCount).DayOfWeek != DayOfWeek.Saturday && countryHoliday.HolidayDate.AddDays(daysCount).DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        break;
+                    }
+                    currentMaxFreeDays++;
+                    daysCount++;
                 }
+
                if (currentMaxFreeDays > maxFreeDays)
                 {
                     maxFreeDays = currentMaxFreeDays;
