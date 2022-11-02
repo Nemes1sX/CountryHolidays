@@ -5,6 +5,7 @@ using CountryHolidays.Models.Entities;
 using CountryHolidays.Models.Responses;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 
 namespace CountryHolidays.Services
@@ -28,39 +29,14 @@ namespace CountryHolidays.Services
         /// <param name="countryCode"></param>
         /// <param name="year"></param>
         /// <returns></returns>
-        public async Task<List<string>> GetCountryHolidaysPerYearGrouped(string countryCode, int year)
+        public async Task<List<IGrouping<int, HolidayListDto>>> GetCountryHolidaysPerYearGrouped(string countryCode, int year)
         {
-            var countryHolidayMonthList = new List<string>();
-            var countryHolidaysCountYear = await _db.Holidays
-                .Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year)
-                .GroupBy(x => new { 
-                    Month = x.HolidayDate.Month,
-                }).Select(x => new 
-                {              
-                    Count = x.Count(),
-                    Month = x.FirstOrDefault().HolidayDate.Month
-                }).ToListAsync();
+            var countryHolidaysList = await _db.Holidays
+                .Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year).ToListAsync();
 
-            if (!countryHolidaysCountYear.Any())
-            {
-                return null;
-            }
+           var countryHoloidayListDto = _mapper.Map<List<HolidayListDto>>(countryHolidaysList).GroupBy(x => x.HolidayDate.Month).ToList();
 
-            foreach (var countryHoliday in countryHolidaysCountYear)
-            {
-                DateTimeFormatInfo mfi = new DateTimeFormatInfo();
-                var monthHolidayCount = string.Empty;
-                if (countryHoliday.Count > 1)
-                {
-                    monthHolidayCount = $"{mfi.GetMonthName(countryHoliday.Month)} has {countryHoliday.Count} holidays";
-                } else
-                {
-                    monthHolidayCount = $"{mfi.GetMonthName(countryHoliday.Month)} has {countryHoliday.Count} holiday";
-                }
-                countryHolidayMonthList.Add(monthHolidayCount);
-            }
-
-            return countryHolidayMonthList;
+            return countryHoloidayListDto;
         }
 
         /// <summary>
@@ -73,11 +49,6 @@ namespace CountryHolidays.Services
         {
             var url = _configuration.GetValue<string>("UrlSettings:HolidayApiUrl");
             var countryHolidaysUrl = url + $"=getHolidaysForYear&year={year}&country={countryCode}";
-            var country = await _db.Countries.FirstOrDefaultAsync(x => x.CountryCode == countryCode);
-            if (country == null)
-            {
-                return null;
-            }
             var countryHolidays = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode && x.HolidayDate.Year == year).ToListAsync();
             if (countryHolidays.Any())
             {
@@ -147,12 +118,16 @@ namespace CountryHolidays.Services
             var dayStatus = await _db.Holidays.Where(x => x.Country.CountryCode == countryCode).Select(x => x.Type).FirstOrDefaultAsync();
             if (dayStatus != null)
             {
-                status += dayStatus + ", ";
-            } 
+                status += dayStatus;
+            }
 
-            if (selectedDate.DayOfWeek == DayOfWeek.Saturday || selectedDate.DayOfWeek == DayOfWeek.Sunday)
+            else if (selectedDate.DayOfWeek == DayOfWeek.Saturday || selectedDate.DayOfWeek == DayOfWeek.Sunday)
             {
-                status += "Free day";
+                status = "Free day";
+            }
+            else
+            {
+                status = "Work day";
             }
 
             return status;
